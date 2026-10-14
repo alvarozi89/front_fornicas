@@ -1,0 +1,53 @@
+
+<div class="dashboard">
+  <header class="dashboard-header">
+    <a class="brand" routerLink="/">Fornicas</a>
+
+    <button class="logout-button" type="button" (click)="logout()">
+      Cerrar sesión
+    </button>
+  </header>
+
+  <main class="dashboard-content">
+    <section class="welcome-card">
+      <p class="eyebrow">Panel privado</p>
+      <h1>¡Bienvenida a Fornicas!</h1>
+      <p>Desde aquí podrás administrar tu perfil y revisar tus novedades.</p>
+      <p class="user-email">{{ email }}</p>
+    </section>
+
+    <section class="dashboard-grid">
+
+    <a class="dashboard-card" routerLink="/panel/perfil">
+      <!-- <div class="card-icon">👤</div> -->
+      <h2>Mi perfil</h2>
+      <p>Consulta y modifica tu información personal, descripción y fotografías.</p>
+      <span class="card-status">Ver mi perfil →</span>
+    </a>
+
+
+      @if (profile) {
+        <a class="dashboard-card" [routerLink]="['/perfil', profile.id]">
+          <h2>Mi perfil publicado</h2>
+          <p>Visita tu perfil público para revisar los comentarios y aprobar o rechazar reseñas pendientes.</p>
+          <span class="card-status">Ver perfil publicado →</span>
+        </a>
+      }
+
+     <a class="dashboard-card" routerLink="/panel/notificaciones">
+      <h2>Notificaciones</h2>
+      <p>Revisa comentarios, calificaciones y otras novedades.</p>
+      <span class="card-status">Ver notificaciones →</span>
+    </a>
+
+
+    <a class="dashboard-card" routerLink="/panel/suscripcion">
+      <h2>Mi suscripción</h2>
+      <p>Consulta el estado de tu prueba gratuita o suscripción.</p>
+      <span class="card-status">Ver mi suscripción →</span>
+    </a>
+
+
+    </section>
+  </main>
+</div>

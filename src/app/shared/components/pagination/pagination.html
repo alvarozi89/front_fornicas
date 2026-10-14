@@ -1,0 +1,43 @@
+<nav aria-label="Paginación de perfiles" class="profile-pagination">
+  <ul class="pagination justify-content-center flex-wrap mb-0">
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <button
+        class="page-link"
+        type="button"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+        aria-label="Página anterior"
+      >
+        Anterior
+      </button>
+    </li>
+
+
+@for (page of pages; track page) {
+  <li class="page-item" [class.active]="page === currentPage">
+    <button
+      class="page-link"
+      type="button"
+      [attr.aria-current]="page === currentPage ? 'page' : null"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+  </li>
+}
+
+<li class="page-item" [class.disabled]="currentPage === totalPages">
+  <button
+    class="page-link"
+    type="button"
+    [disabled]="currentPage === totalPages"
+    (click)="goToPage(currentPage + 1)"
+    aria-label="Página siguiente"
+  >
+    Siguiente
+  </button>
+</li>
+
+
+  </ul>
+</nav>

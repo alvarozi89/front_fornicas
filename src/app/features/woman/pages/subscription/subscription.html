@@ -1,0 +1,110 @@
+
+<div class="subscription-page">
+  <header class="subscription-header">
+    <a class="brand" routerLink="/">Fornicas</a>
+    <a class="back-link" routerLink="/panel">Volver al panel</a>
+  </header>
+
+  <main class="subscription-content">
+    <section class="subscription-heading">
+      <p class="eyebrow">Tu cuenta</p>
+      <h1>Mi suscripción</h1>
+      <p>Consulta el estado de tu plan y su fecha de vencimiento.</p>
+    </section>
+
+    @if (isLoading) {
+      <section class="subscription-card state-card">
+        <p>Consultando tu suscripción...</p>
+      </section>
+    } @else if (errorMessage) {
+      <section class="subscription-card state-card error-state">
+        <p>{{ errorMessage }}</p>
+        <button type="button" (click)="loadSubscription()">
+          Intentar de nuevo
+        </button>
+      </section>
+    } @else if (!subscription) {
+      <section class="subscription-card state-card empty-state">
+        <h2>No tienes una suscripción activa</h2>
+        <p>Si acabas de realizar un pago, espera a que sea aprobado.</p>
+      </section>
+    } @else {
+      <section class="subscription-card">
+        <div class="subscription-card-header">
+          <div>
+            <p class="eyebrow">Plan actual</p>
+            <h2>
+              {{ subscription.type === 'FREE_TRIAL' ? 'Prueba gratuita' : 'Plan de pago' }}
+            </h2>
+          </div>
+
+          <span
+            class="status-badge"
+            [class.status-active]="subscription.status === 'ACTIVE'"
+            [class.status-expired]="subscription.status === 'EXPIRED'"
+            [class.status-cancelled]="subscription.status === 'CANCELLED'"
+          >
+            {{ subscription.status === 'ACTIVE' ? 'Activa' :
+               subscription.status === 'EXPIRED' ? 'Vencida' :
+               subscription.status === 'CANCELLED' ? 'Cancelada' :
+               subscription.status }}
+          </span>
+        </div>
+
+        <div class="subscription-details">
+          <div class="detail-item">
+            <span>Fecha de inicio</span>
+            <strong>{{ subscription.start_date | date:'dd/MM/yyyy' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Fecha de vencimiento</span>
+            <strong>{{ subscription.end_date | date:'dd/MM/yyyy' }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Valor registrado</span>
+            <strong>{{ subscription.amount | currency:'COP':'symbol':'1.0-0':'es-CO' }}</strong>
+          </div>
+        </div>
+      </section>
+
+    }
+
+    <!-- Información de pagos por Nequi -->
+    <section class="subscription-card payment-notice">
+      <h2>Información importante sobre los pagos</h2>
+
+      <p>
+        Actualmente, los pagos de Fornicas se reciben exclusivamente
+        por <strong>Nequi al número 315 649 0504</strong>. <br> <strong>Costo $30.000 mensualidad</strong>.
+      </p>
+
+      <p>
+        Una vez realizado el pago, envía el comprobante de la transacción
+        a nuestro WhatsApp. Un agente de soporte te atenderá para verificar
+        el pago y ayudarte con la activación de tu suscripción.
+      </p>
+
+      <a
+        class="whatsapp-button"
+        href="https://wa.me/573156490504?text=Hola%2C%20realic%C3%A9%20el%20pago%20de%20mi%20suscripci%C3%B3n%20de%20Fornicas%20y%20deseo%20enviar%20el%20comprobante."
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Enviar comprobante por WhatsApp
+      </a>
+
+      <p class="payment-warning">
+        <strong>Importante:</strong> el número de Nequi indicado y este
+        WhatsApp son los únicos canales autorizados para gestionar los pagos
+        de Fornicas. No envíes dinero a otros números ni a terceros.
+      </p>
+        <p class="payment-warning">
+        <strong>Tu apoyo:</strong> La mensualidad tiene un costo de $30.000 con este aporte contribuyes que nuestra app siga en funcionamiento.
+      </p>
+    </section>
+  </main>
+</div>
+
+

@@ -1,0 +1,198 @@
+
+<div class="register-page">
+  <div class="register-card">
+
+    <header class="register-header">
+      <h1>Únete a Fornicas</h1>
+      <p>Crea tu cuenta y comienza a construir tu perfil.</p>
+      <span class="register-badge">Un mes de prueba gratis</span>
+    </header>
+
+    <form (ngSubmit)="submit()" #registerForm="ngForm">
+
+      <div class="form-section">
+        <h2>Datos de acceso</h2>
+
+        <div class="form-group">
+          <label for="email">Correo electrónico *</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [(ngModel)]="form.email"
+            placeholder="correo@ejemplo.com"
+            autocomplete="email"
+            required
+            email>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña *</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            [(ngModel)]="form.password"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+            minlength="8"
+            required>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Información personal</h2>
+
+        <div class="form-group">
+          <label for="name">Nombre *</label>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            [(ngModel)]="form.name"
+            placeholder="Tu nombre"
+            autocomplete="name"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="birth_date">Fecha de nacimiento *</label>
+          <input
+            id="birth_date"
+            type="date"
+            name="birth_date"
+            [(ngModel)]="form.birth_date"
+            [max]=""
+            required>
+          <small>Debes tener al menos 18 años.</small>
+        </div>
+
+        <div class="form-group">
+
+<div class="form-group city-autocomplete">
+  <label for="citySearch">Ciudad *</label>
+
+  <input
+    id="citySearch"
+    type="text"
+    name="citySearch"
+    [(ngModel)]="citySearch"
+    (input)="filterCities()"
+    (focus)="onCitySearchFocus()"
+    placeholder="Escribe el nombre de tu ciudad"
+    autocomplete="off"
+    required>
+
+  <div
+    class="city-suggestions"
+    *ngIf="showCitySuggestions && filteredCities.length > 0">
+
+    <button
+      type="button"
+      class="city-suggestion"
+      *ngFor="let city of filteredCities"
+      (click)="selectCity(city)">
+      {{ city.name }}
+    </button>
+  </div>
+
+  <small *ngIf="citySearch && !form.city_id">
+    Selecciona una ciudad de la lista de sugerencias.
+  </small>
+
+  <small *ngIf="isLoadingCities">
+    Cargando ciudades...
+  </small>
+
+  <small
+    *ngIf="!isLoadingCities && citySearch.trim() && filteredCities.length === 0 && !form.city_id">
+    No se encontraron ciudades.
+  </small>
+</div>
+
+
+        </div>
+
+        <div class="form-group">
+          <label for="nickname">Apodo</label>
+          <input
+            id="nickname"
+            type="text"
+            name="nickname"
+            [(ngModel)]="form.nickname"
+            placeholder="Opcional">
+        </div>
+
+        <div class="form-group">
+          <label for="title">Título de tu perfil</label>
+          <input
+            id="title"
+            type="text"
+            name="title"
+            [(ngModel)]="form.title"
+            placeholder="Ej. Conoce un poco más de mí">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descripción</label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="form.description"
+            rows="4"
+            placeholder="Cuéntales algo sobre ti..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Medios de contacto</h2>
+
+        <div class="form-group">
+          <label for="whatsapp">WhatsApp</label>
+          <input
+            id="whatsapp"
+            type="tel"
+            name="whatsapp"
+            [(ngModel)]="form.whatsapp"
+            placeholder="Número con indicativo">
+        </div>
+
+        <div class="form-group">
+          <label for="telegram">Telegram</label>
+          <input
+            id="telegram"
+            type="text"
+            name="telegram"
+            [(ngModel)]="form.telegram"
+            placeholder="Usuario o enlace">
+        </div>
+      </div>
+
+      <div class="register-feedback error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="register-feedback success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <button
+        type="submit"
+        class="register-button"
+        [disabled]="isSubmitting || isLoadingCities">
+        {{ isSubmitting ? 'Creando cuenta...' : 'Crear mi cuenta' }}
+      </button>
+
+      <p class="login-link">
+        ¿Ya tienes una cuenta?
+        <a routerLink="/auth/login">Inicia sesión</a>
+      </p>
+
+      <p class="privacy-note">
+        Al registrarte confirmas que tienes 18 años o más.
+      </p>
+
+    </form>
+  </div>
+</div>
+

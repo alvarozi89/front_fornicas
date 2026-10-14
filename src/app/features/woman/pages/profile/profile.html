@@ -1,0 +1,389 @@
+
+<section class="profile-page">
+  <header class="page-header">
+    <a routerLink="/panel" class="back-link">← Volver al panel</a>
+    <h1>Mi perfil</h1>
+    <p>Consulta y actualiza la información de tu perfil en Fornicas.</p>
+  </header>
+
+  <div *ngIf="isLoading" class="state-message">
+    Cargando tu perfil...
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="state-message error">
+    {{ errorMessage }}
+    <button
+      *ngIf="!profile"
+      type="button"
+      (click)="loadProfile()">
+      Reintentar
+    </button>
+  </div>
+
+  <div *ngIf="successMessage" class="state-message success">
+    {{ successMessage }}
+  </div>
+
+  <ng-container *ngIf="!isLoading && profile">
+    <article class="profile-card">
+      <div class="profile-heading">
+        <div class="avatar">
+          {{ profile.name.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="profile-heading-info">
+          <h2>{{ profile.name }}</h2>
+          <p *ngIf="profile.title">{{ profile.title }}</p>
+
+          <span class="status" *ngIf="profile.status">
+            {{ profile.status === 'ACTIVE' ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+
+        <button
+          *ngIf="!isEditing"
+          type="button"
+          class="edit-button"
+          (click)="startEditing()">
+          ✎ Editar perfil
+        </button>
+      </div>
+
+      <form
+        *ngIf="isEditing"
+        #profileForm="ngForm"
+        (ngSubmit)="saveProfile()"
+        class="edit-form">
+
+        <h3>Información personal</h3>
+
+        <div class="form-grid">
+          <label>
+            Nombre completo *
+            <input
+              type="text"
+              name="name"
+              [(ngModel)]="formData.name"
+              required
+              maxlength="100">
+          </label>
+
+          <label>
+            Título del perfil
+            <input
+              type="text"
+              name="title"
+              [(ngModel)]="formData.title"
+              maxlength="150"
+              placeholder="Ej. Un poco sobre mí">
+          </label>
+
+          <label>
+            Apodo público
+            <input
+              type="text"
+              name="nickname"
+              [(ngModel)]="formData.nickname"
+              maxlength="100"
+              placeholder="Opcional">
+          </label>
+
+          <label>
+            Fecha de nacimiento *
+            <input
+              type="date"
+              name="birth_date"
+              [(ngModel)]="formData.birth_date"
+              required>
+          </label>
+
+
+
+<label class="city-field">
+  Ciudad *
+  <div class="city-search-container">
+    <input
+      type="text"
+      name="citySearch"
+      [(ngModel)]="citySearch"
+      (ngModelChange)="filterCities()"
+      (focus)="onCitySearchFocus()"
+      (blur)="showCitySuggestions = false"
+      autocomplete="off"
+      placeholder="Escribe el nombre de tu ciudad..."
+      required>
+
+    <div
+      class="city-suggestions"
+      *ngIf="showCitySuggestions && filteredCities.length > 0">
+
+      <button
+        type="button"
+        class="city-suggestion"
+        *ngFor="let city of filteredCities"
+        (mousedown)="selectCity(city)">
+        {{ city.name }}
+      </button>
+    </div>
+
+    <p
+      class="city-empty"
+      *ngIf="showCitySuggestions && citySearch.trim() && filteredCities.length === 0">
+      No encontramos coincidencias.
+    </p>
+    <small class="city-error" *ngIf="cityError">
+  {{ cityError }}
+</small>
+  </div>
+
+  <small class="city-selected" *ngIf="formData.city_id">
+    Ciudad seleccionada: {{ getSelectedCityName() }}
+  </small>
+</label>
+
+
+
+
+
+
+
+          <label class="full-width">
+            Descripción
+            <textarea
+              name="description"
+              [(ngModel)]="formData.description"
+              rows="5"
+              placeholder="Cuéntales un poco sobre ti..."></textarea>
+          </label>
+
+          <label>
+            WhatsApp
+            <input
+              type="text"
+              name="whatsapp"
+              [(ngModel)]="formData.whatsapp"
+              maxlength="30"
+              placeholder="Número con indicativo">
+          </label>
+
+          <label>
+            Telegram
+            <input
+              type="text"
+              name="telegram"
+              [(ngModel)]="formData.telegram"
+              maxlength="100"
+              placeholder="Usuario o enlace">
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="cancel-button"
+            [disabled]="isSaving"
+            (click)="cancelEditing()">
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="profileForm.invalid || isSaving">
+            {{ isSaving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+
+      <ng-container *ngIf="!isEditing">
+        <div class="profile-details">
+          <div class="detail">
+            <span>Nombre</span>
+            <strong>{{ profile.name }}</strong>
+          </div>
+
+          <div class="detail">
+            <span>Apodo público</span>
+            <strong>{{ profile.nickname || 'No registrado' }}</strong>
+          </div>
+
+          <div class="detail">
+            <span>Fecha de nacimiento</span>
+            <strong>
+              {{ profile.birth_date
+                ? (profile.birth_date | date:'dd/MM/yyyy')
+                : 'No registrada' }}
+            </strong>
+          </div>
+
+          <div class="detail">
+            <span>Ciudad</span>
+           <strong>
+  {{ profile.cityData?.name || getCityName(profile.city_id) || 'No registrada' }}
+</strong>
+          </div>
+
+          <div class="detail full-width">
+            <span>Descripción</span>
+            <p>
+              {{ profile.description || 'Aún no has agregado una descripción.' }}
+            </p>
+          </div>
+
+          <div class="detail">
+            <span>WhatsApp</span>
+            <strong>{{ profile.whatsapp || 'No registrado' }}</strong>
+          </div>
+
+          <div class="detail">
+            <span>Telegram</span>
+            <strong>{{ profile.telegram || 'No registrado' }}</strong>
+          </div>
+        </div>
+      </ng-container>
+
+
+<div class="profile-media">
+  <h3>Mis fotografías</h3>
+
+  <p class="media-description">
+    Administra tus fotografías. Puedes subir hasta 10 imágenes de máximo 5 MB.
+  </p>
+
+  <div class="photo-feedback photo-error" *ngIf="photoError">
+    {{ photoError }}
+  </div>
+
+  <div class="photo-feedback photo-success" *ngIf="photoMessage">
+    {{ photoMessage }}
+  </div>
+
+  <div class="photo-upload">
+
+<label for="photoInput" class="photo-upload-label">
+  Seleccionar fotografía
+</label>
+
+<input
+  id="photoInput"
+  class="photo-file-input"
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  (change)="onPhotoSelected($event)"
+  [disabled]="isUploadingPhoto || photos.length >= 10">
+
+    <span class="selected-photo-name" *ngIf="selectedPhotoFile">
+      {{ selectedPhotoFile.name }}
+    </span>
+
+    <button
+      type="button"
+      class="photo-upload-button"
+      (click)="uploadPhoto()"
+      [disabled]="!selectedPhotoFile || isUploadingPhoto || photos.length >= 10">
+      {{ isUploadingPhoto ? 'Subiendo fotografía...' : 'Subir fotografía' }}
+    </button>
+
+    <small>{{ photos.length }} de 10 fotografías</small>
+  </div>
+
+  <div *ngIf="isLoadingPhotos" class="empty-media">
+    Cargando fotografías...
+  </div>
+
+  <div *ngIf="!isLoadingPhotos && photos.length === 0" class="empty-media">
+    Todavía no tienes fotografías. Selecciona una imagen para comenzar.
+  </div>
+
+  <div class="photo-grid" *ngIf="!isLoadingPhotos && photos.length > 0">
+    <div class="photo-item" *ngFor="let photo of photos">
+      <img
+        [src]="getPhotoUrl(photo.url)"
+        [alt]="'Fotografía de ' + profile?.name"
+        loading="lazy">
+
+      <span *ngIf="photo.is_main" class="main-photo">
+        Foto principal
+      </span>
+
+      <div class="photo-actions">
+        <button
+  type="button"
+  class="set-main-button"
+  *ngIf="!photo.is_main"
+  (click)="openPhotoModal(photo, 'main')">
+  Hacer principal
+</button>
+        <button
+    type="button"
+    class="delete-photo-button"
+    (click)="openPhotoModal(photo, 'delete')">
+    Eliminar
+  </button>
+
+
+      </div>
+    </div>
+  </div>
+
+  <h3>Mis videos</h3>
+
+  <p *ngIf="!profile?.videos?.length" class="empty-media">
+    La gestión de videos estará disponible en una próxima actualización.
+  </p>
+</div>
+    </article>
+  </ng-container>
+
+  <div *ngIf="!isLoading && !errorMessage && !profile" class="state-message">
+    No se encontró información de tu perfil.
+  </div>
+</section>
+
+
+<!-- Modal de confirmación para fotografías -->
+<div class="photo-modal-overlay" *ngIf="showPhotoModal">
+  <div
+    class="photo-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="photoModalTitle">
+
+    <div class="photo-modal-icon"
+         [class.delete-icon]="photoModalAction === 'delete'">
+      {{ photoModalAction === 'delete' ? '!' : '★' }}
+    </div>
+
+    <h3 id="photoModalTitle">
+      {{ photoModalAction === 'delete'
+        ? '¿Eliminar fotografía?'
+        : '¿Cambiar foto principal?' }}
+    </h3>
+
+    <p *ngIf="photoModalAction === 'delete'">
+      Esta fotografía se eliminará permanentemente. ¿Deseas continuar?
+    </p>
+
+    <p *ngIf="photoModalAction === 'main'">
+      Esta fotografía será la imagen principal de tu perfil. ¿Deseas continuar?
+    </p>
+
+    <div class="photo-modal-actions">
+      <button
+        type="button"
+        class="photo-modal-cancel"
+        (click)="closePhotoModal()">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="photo-modal-confirm"
+        [class.delete-confirm]="photoModalAction === 'delete'"
+        (click)="confirmPhotoAction()">
+        {{ photoModalAction === 'delete' ? 'Sí, eliminar' : 'Sí, cambiar' }}
+      </button>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,40 @@
+.profile-pagination {
+padding: 24px 0;
+}
+
+.profile-pagination .page-link {
+color: #7e22ce;
+border-color: #eee5f4;
+padding: 10px 15px;
+margin: 0 3px;
+border-radius: 8px;
+font-weight: 500;
+transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-pagination .page-link:hover:not(:disabled) {
+color: #6b21a8;
+background-color: #f3e8ff;
+}
+
+.profile-pagination .page-item.active .page-link {
+color: #ffffff;
+background-color: #7e22ce;
+border-color: #7e22ce;
+}
+
+.profile-pagination .page-item.disabled .page-link {
+color: #aaa0b0;
+background-color: #f8f6fa;
+}
+
+.profile-pagination .page-link:focus {
+box-shadow: 0 0 0 0.2rem rgba(126, 34, 206, 0.2);
+}
+
+@media (max-width: 576px) {
+.profile-pagination .page-link {
+padding: 8px 11px;
+margin: 0 2px;
+}
+}

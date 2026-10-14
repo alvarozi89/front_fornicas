@@ -1,0 +1,64 @@
+.site-footer {
+background: #2e1638;
+color: #f7effb;
+margin-top: 48px;
+}
+
+.footer-brand {
+display: inline-block;
+color: #ffffff;
+font-size: 1.8rem;
+font-weight: 800;
+text-decoration: none;
+letter-spacing: -0.5px;
+}
+
+.footer-description {
+max-width: 360px;
+color: #d6c8df;
+line-height: 1.7;
+}
+
+.footer-title {
+color: #ffffff;
+font-size: 1rem;
+font-weight: 700;
+margin-bottom: 16px;
+}
+
+.footer-links {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+.footer-links li {
+margin-bottom: 10px;
+}
+
+.footer-links a {
+color: #d6c8df;
+text-decoration: none;
+transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+color: #d8b4fe;
+}
+
+.footer-divider {
+border-color: rgba(255, 255, 255, 0.2);
+margin: 28px 0 20px;
+}
+
+.footer-bottom {
+color: #c9b9d2;
+font-size: 0.875rem;
+text-align: center;
+}
+
+@media (max-width: 576px) {
+.site-footer {
+margin-top: 32px;
+}
+}

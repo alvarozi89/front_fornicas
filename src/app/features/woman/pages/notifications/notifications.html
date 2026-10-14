@@ -1,0 +1,94 @@
+<div class="notifications-page">
+  <header class="notifications-header">
+    <a class="brand" routerLink="/">Fornicas</a>
+    <a class="back-link" routerLink="/panel">Volver al panel</a>
+  </header>
+
+  <main class="notifications-content">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Tu actividad</p>
+        <h1>Notificaciones</h1>
+        <p class="subtitle">Aquí encontrarás las novedades de tu perfil.</p>
+      </div>
+
+
+  @if (notifications.length > 0) {
+    <button
+      class="mark-all-button"
+      type="button"
+      (click)="markAllAsRead()"
+    >
+      Marcar todas como leídas
+    </button>
+  }
+</div>
+
+@if (isLoading) {
+  <section class="state-card">
+    <p>Cargando notificaciones...</p>
+  </section>
+} @else if (errorMessage) {
+  <section class="state-card error-state">
+    <p>{{ errorMessage }}</p>
+    <button type="button" (click)="loadNotifications()">
+      Intentar de nuevo
+    </button>
+  </section>
+} @else if (notifications.length === 0) {
+  <section class="state-card empty-state">
+    <div class="empty-icon" aria-hidden="true">🔔</div>
+    <h2>No tienes notificaciones</h2>
+    <p>Cuando haya novedades, aparecerán aquí.</p>
+  </section>
+} @else {
+  <section class="notifications-list" aria-label="Lista de notificaciones">
+    @for (notification of notifications; track notification.id) {
+      <article
+        class="notification-card"
+        [class.unread]="!notification.is_read"
+      >
+        <div class="notification-icon" aria-hidden="true">
+          @if (notification.type === 'COMMENT') {
+            💬
+          } @else if (notification.type === 'RATING') {
+            ⭐
+          } @else if (notification.type === 'SUBSCRIPTION') {
+            👑
+          } @else {
+            🔔
+          }
+        </div>
+
+        <div class="notification-body">
+          <div class="notification-title-row">
+            <h2>{{ notification.title }}</h2>
+            @if (!notification.is_read) {
+              <span class="unread-label">Nueva</span>
+            }
+          </div>
+
+          <p>{{ notification.message }}</p>
+
+          <time [attr.datetime]="notification.createdAt">
+            {{ notification.createdAt | date:'dd/MM/yyyy, h:mm a' }}
+          </time>
+        </div>
+
+        @if (!notification.is_read) {
+          <button
+            class="mark-read-button"
+            type="button"
+            (click)="markAsRead(notification)"
+          >
+            Marcar como leída
+          </button>
+        }
+      </article>
+    }
+  </section>
+}
+
+
+  </main>
+</div>

@@ -1,0 +1,263 @@
+
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f3fb 0%, #eee3f5 100%);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 680px;
+  padding: 36px;
+  border: 1px solid #eadff0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgb(58 31 72 / 10%);
+}
+
+.register-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.register-header h1 {
+  margin: 0 0 10px;
+  color: #593476;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.register-header p {
+  margin: 0 0 18px;
+  color: #75677e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.register-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 30px;
+  background: #f0e5f8;
+  color: #68408a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form-section {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee6f2;
+}
+
+.form-section h2 {
+  margin: 0 0 20px;
+  color: #493057;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  color: #493e50;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #dcd1e3;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #302638;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #8050a3;
+  box-shadow: 0 0 0 3px rgb(128 80 163 / 12%);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #a398ac;
+}
+
+.form-group small {
+  color: #817488;
+  font-size: 12px;
+}
+
+.register-feedback {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.register-feedback.error {
+  border: 1px solid #f0c6cb;
+  background: #fff1f2;
+  color: #a51d2d;
+}
+
+.register-feedback.success {
+  border: 1px solid #bde5ca;
+  background: #effaf2;
+  color: #237443;
+}
+
+.register-button {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #74429a;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #60347f;
+}
+
+.register-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.login-link {
+  margin: 22px 0 0;
+  color: #716778;
+  font-size: 13px;
+  text-align: center;
+}
+
+.login-link a {
+  color: #74429a;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.privacy-note {
+  margin: 18px 0 0;
+  color: #95889c;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .register-page {
+    align-items: flex-start;
+    padding: 20px 12px;
+  }
+
+  .register-card {
+    padding: 24px 18px;
+    border-radius: 15px;
+  }
+
+  .register-header h1 {
+    font-size: 25px;
+  }
+
+  .form-section h2 {
+    font-size: 16px;
+  }
+}
+
+
+/* Autocompletado de ciudades */
+.city-autocomplete {
+  position: relative;
+}
+
+.city-suggestions {
+  position: absolute;
+  top: calc(100% - 24px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #dcd1e3;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgb(58 31 72 / 14%);
+}
+
+.city-suggestion {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-bottom: 1px solid #f0eaf4;
+  background: #fff;
+  color: #493e50;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.city-suggestion:last-child {
+  border-bottom: none;
+}
+
+.city-suggestion:hover,
+.city-suggestion:focus-visible {
+  outline: none;
+  background: #f4edf9;
+  color: #74429a;
+}
+
+.city-autocomplete small {
+  display: block;
+  margin-top: 6px;
+}
+

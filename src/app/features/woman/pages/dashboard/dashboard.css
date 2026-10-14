@@ -1,0 +1,135 @@
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #faf7fc;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 6%;
+  background: #ffffff;
+  border-bottom: 1px solid #eee5f4;
+}
+
+.brand {
+  color: #7e22ce;
+  font-size: 1.7rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.logout-button {
+  padding: 10px 18px;
+  color: #7e22ce;
+  background: #ffffff;
+  border: 1px solid #7e22ce;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.logout-button:hover {
+  color: #ffffff;
+  background: #7e22ce;
+}
+
+.dashboard-content {
+  width: min(1100px, 88%);
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.welcome-card {
+  padding: 36px;
+  background: #ffffff;
+  border: 1px solid #eee5f4;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(46 22 56 / 5%);
+}
+
+.eyebrow {
+  color: #7e22ce;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+.welcome-card h1 {
+  margin: 12px 0;
+  color: #2e1638;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+}
+
+.welcome-card p {
+  color: #6b6470;
+  line-height: 1.6;
+}
+
+.user-email {
+  font-weight: 600;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.dashboard-card {
+  display: block;
+  padding: 26px;
+  color: inherit;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #eee5f4;
+  border-radius: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgb(46 22 56 / 8%);
+}
+
+.dashboard-card h2 {
+  margin-top: 0;
+  color: #2e1638;
+  font-size: 1.2rem;
+}
+
+.dashboard-card p {
+  color: #6b6470;
+  line-height: 1.6;
+}
+
+.card-status {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 10px;
+  color: #7e22ce;
+  background: #f3e8ff;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 800px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-card {
+    padding: 26px;
+  }
+
+  .dashboard-content {
+    padding: 30px 0;
+  }
+}

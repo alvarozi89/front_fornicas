@@ -1,0 +1,529 @@
+
+@if (isLoading) {
+  <div class="container py-5 text-center">
+    <p>Cargando perfil...</p>
+  </div>
+} @else if (errorMessage) {
+  <div class="container py-5">
+    <div class="alert alert-warning">{{ errorMessage }}</div>
+    <a routerLink="/" class="btn btn-outline-secondary">Volver al inicio</a>
+  </div>
+} @else if (profile) {
+  <main class="container py-4">
+    <a routerLink="/" class="btn btn-outline-secondary mb-4">
+      ← Volver a los perfiles
+    </a>
+
+    <div class="row g-4">
+      <section class="col-12 col-lg-7">
+        @if (profile.photos.length > 0) {
+
+  <div id="profilePhotoCarousel" class="carousel slide mb-3">
+    <div class="carousel-inner rounded bg-light">
+      @for (photo of profile.photos; track photo.id; let i = $index) {
+        <div class="carousel-item" [class.active]="i === currentPhotoIndex">
+          <img
+            [src]="getPhotoUrl(photo.url)"
+            [alt]="'Foto ' + (i + 1) + ' de ' + profile.name"
+            class="d-block w-100 rounded"
+            style="height: 450px; object-fit: contain;"
+          />
+        </div>
+      }
+    </div>
+
+
+@if (profile.photos.length > 1) {
+  <button
+    class="carousel-control-prev"
+    type="button"
+    aria-label="Foto anterior"
+    (click)="previousPhoto()"
+  >
+    <span class="carousel-control-prev-icon bg-dark rounded-circle p-3"
+      aria-hidden="true"></span>
+  </button>
+
+  <button
+    class="carousel-control-next"
+    type="button"
+    aria-label="Foto siguiente"
+    (click)="nextPhoto()"
+  >
+    <span class="carousel-control-next-icon bg-dark rounded-circle p-3"
+      aria-hidden="true"></span>
+  </button>
+
+  <div class="text-center mt-2 small text-muted">
+    Foto {{ currentPhotoIndex + 1 }} de {{ profile.photos.length }}
+  </div>
+}
+
+
+  </div>
+} @else {
+  <div class="alert alert-light">Este perfil aún no tiene fotos.</div>
+}
+
+
+        @if (profile.videos?.length) {
+          <h2 class="h5 mt-4">Videos</h2>
+
+          @for (video of profile.videos; track video.id) {
+            <video
+              class="w-100 rounded mb-3"
+              controls
+              preload="metadata"
+            >
+              <source [src]="getPhotoUrl(video.url)" />
+              Tu navegador no admite la reproducción de video.
+            </video>
+          }
+        }
+      </section>
+
+      <section class="col-12 col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h1 class="h3">{{ profile.name }}</h1>
+
+            @if (profile.birth_date) {
+              <p class="text-muted mb-2">
+                {{ profile.birth_date }}
+              </p>
+            }
+
+            @if (profile.cityData) {
+              <p class="text-muted">
+                {{ profile.cityData.name }}
+                @if (profile.cityData.department) {
+                  , {{ profile.cityData.department.name }}
+                }
+              </p>
+            }
+
+            @if (profile.title) {
+              <h2 class="h5 mt-4">{{ profile.title }}</h2>
+            }
+
+            @if (profile.description) {
+              <h2 class="h5 mt-4">Sobre mí</h2>
+              <p class="profile-description">{{ profile.description }}</p>
+            }
+
+            <hr />
+
+            <p class="mb-2">
+              <strong>Visitas:</strong> {{ views }}
+            </p>
+
+
+        @if (profile.whatsapp) {
+          <a
+            class="btn btn-success me-2 mb-2"
+            [href]="'https://wa.me/' + profile.whatsapp + '?text=' + ('Hola, vengo de visitar tu perfil en la página Fornicas.')"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WhatsApp
+          </a>
+        }
+
+
+            @if (profile.telegram) {
+              <a
+                class="btn btn-primary mb-2"
+                [href]="'https://t.me/' + profile.telegram.replace('@', '')"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Telegram
+              </a>
+            }
+          </div>
+        </div>
+
+@if (showModerationModal) {
+  <div
+    class="modal d-block"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="moderationModalTitle"
+    style="background-color: rgba(0, 0, 0, 0.5);">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="moderationModalTitle">
+            Confirmar moderación
+          </h2>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Cerrar"
+            [disabled]="isModeratingReview"
+            (click)="closeModerationModal()">
+          </button>
+        </div>
+
+        <div class="modal-body">
+          @if (selectedModerationStatus === 'APPROVED') {
+            <p>
+              ¿Deseas aprobar este comentario y su calificación?
+              Ambos serán visibles públicamente.
+            </p>
+          } @else {
+            <p>
+              ¿Deseas rechazar este comentario y su calificación?
+              Ambos dejarán de estar pendientes de moderación.
+            </p>
+          }
+
+          @if (moderationErrorMessage) {
+            <div class="alert alert-danger" role="alert">
+              {{ moderationErrorMessage }}
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="isModeratingReview"
+            (click)="closeModerationModal()">
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            class="btn"
+            [class.btn-success]="selectedModerationStatus === 'APPROVED'"
+            [class.btn-danger]="selectedModerationStatus === 'REJECTED'"
+            [disabled]="isModeratingReview"
+            (click)="confirmModeration()">
+
+            @if (isModeratingReview) {
+              Procesando...
+            } @else if (selectedModerationStatus === 'APPROVED') {
+              Sí, aprobar
+            } @else {
+              Sí, rechazar
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+@if (showReviewModal) {
+  <div
+    class="modal d-block"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="reviewModalTitle"
+    style="background-color: rgba(0, 0, 0, 0.5);"
+    (click)="closeReviewModal()"
+  >
+    <div
+      class="modal-dialog modal-dialog-centered"
+      role="document"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="reviewModalTitle">
+            Calificar y comentar
+          </h2>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Cerrar"
+            [disabled]="isSubmittingReview"
+            (click)="closeReviewModal()"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          @if (reviewSuccessMessage) {
+            <div class="alert alert-success">
+              {{ reviewSuccessMessage }}
+            </div>
+          }
+
+          @if (reviewErrorMessage) {
+            <div class="alert alert-danger">
+              {{ reviewErrorMessage }}
+            </div>
+          }
+
+          <form (ngSubmit)="submitReview()" #reviewForm="ngForm">
+            <div class="mb-3">
+              <label for="reviewNickname" class="form-label">
+                Apodo <span class="text-danger">*</span>
+              </label>
+
+              <input
+                id="reviewNickname"
+                name="reviewNickname"
+                type="text"
+                class="form-control"
+                [(ngModel)]="reviewNickname"
+                maxlength="100"
+                required
+                placeholder="Escribe tu apodo"
+                [disabled]="isSubmittingReview"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label d-block">
+                Tu calificación <span class="text-danger">*</span>
+              </label>
+
+              <div
+                class="d-flex gap-2"
+                role="group"
+                aria-label="Seleccionar calificación"
+              >
+                @for (star of ratingStars; track star) {
+                  <button
+                    type="button"
+                    class="btn btn-link p-0 text-decoration-none fs-2"
+                    [class.text-warning]="star <= (hoveredRating || selectedRating)"
+                    [class.text-secondary]="star > (hoveredRating || selectedRating)"
+                    [attr.aria-label]="star + ' de 5 estrellas'"
+                    [attr.aria-pressed]="selectedRating === star"
+                    [disabled]="isSubmittingReview"
+                    (mouseenter)="hoveredRating = star"
+                    (mouseleave)="hoveredRating = 0"
+                    (click)="selectRating(star)"
+                  >
+                    {{ star <= (hoveredRating || selectedRating) ? '★' : '☆' }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="reviewContent" class="form-label">
+                Comentario <span class="text-danger">*</span>
+              </label>
+
+              <textarea
+                id="reviewContent"
+                name="reviewContent"
+                class="form-control"
+                [(ngModel)]="reviewContent"
+                rows="4"
+                maxlength="500"
+                required
+                placeholder="Escribe tu comentario"
+                [disabled]="isSubmittingReview"
+              ></textarea>
+
+              <div class="form-text text-end">
+                {{ reviewContent.length }}/500 caracteres
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                [disabled]="isSubmittingReview"
+                (click)="closeReviewModal()"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="isSubmittingReview || !reviewForm.valid || selectedRating === 0"
+              >
+                @if (isSubmittingReview) {
+                  Enviando...
+                } @else {
+                  Enviar valoración
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="mt-4">
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="openReviewModal()"
+  >
+    Calificar y comentar
+  </button>
+</div>
+<section class="mt-4">
+  <h2 class="h5">Calificaciones</h2>
+
+  @if (rating && (rating.total ?? 0) > 0) {
+    <div class="d-flex align-items-center gap-2 mb-1">
+
+<span class="fs-4" aria-label="Calificación del perfil">
+  @for (star of ratingStars; track star) {
+    @if (getStarType(star) === 'full') {
+      <span class="text-warning">★</span>
+    } @else if (getStarType(star) === 'half') {
+      <span class="text-warning">⯨</span>
+    } @else {
+      <span class="text-secondary">☆</span>
+    }
+  }
+</span>
+
+      <strong class="fs-5">
+        {{ rating.average ?? 0 | number:'1.1-1' }}
+      </strong>
+    </div>
+
+ <p class="text-muted mb-0">
+  {{ rating.total }} valoraciones en total
+</p>
+  } @else {
+    <p class="text-muted mb-0">
+      Este perfil todavía no tiene calificaciones.
+    </p>
+  }
+</section>
+
+@if (isProfileOwner) {
+  <section class="card mt-4 border-warning">
+    <div class="card-body">
+      <h2 class="h5 mb-3">
+        Comentarios pendientes de moderación
+        <span class="badge bg-warning text-dark">
+          {{ pendingComments.length }}
+        </span>
+      </h2>
+
+      @if (pendingComments.length === 0) {
+        <p class="text-muted mb-0">
+          No tienes comentarios pendientes por revisar.
+        </p>
+      } @else {
+        @for (comment of pendingComments; track comment.id) {
+          <article class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <strong>
+                {{ comment.nickname || 'Visitante anónimo' }}
+              </strong>
+              <small class="text-muted">
+                {{ comment.createdAt | date:'dd/MM/yyyy' }}
+              </small>
+            </div>
+
+            <p class="text-break">{{ comment.content }}</p>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button
+                type="button"
+                class="btn btn-success btn-sm"
+                [disabled]="isModeratingReview"
+                (click)="openModerationModal(comment.id, 'APPROVED')">
+                Aprobar reseña
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                [disabled]="isModeratingReview"
+                (click)="openModerationModal(comment.id, 'REJECTED')">
+                Rechazar reseña
+              </button>
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </section>
+}
+<section class="mt-4">
+  <h2 class="h5 mb-3">Comentarios</h2>
+
+  @if (comments.length === 0) {
+    <p class="text-muted">
+      Todavía no hay comentarios aprobados.
+    </p>
+  } @else {
+    @for (comment of paginatedComments; track comment.id) {
+      <article class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <strong>
+              {{ comment.nickname || 'Visitante anónimo' }}
+            </strong>
+
+            <small class="text-muted">
+              {{ comment.createdAt | date:'dd/MM/yyyy' }}
+            </small>
+          </div>
+
+          <p class="mb-0 text-break">
+            {{ comment.content }}
+          </p>
+        </div>
+      </article>
+    }
+    @if (totalCommentsPages > 1) {
+  <nav aria-label="Paginación de comentarios" class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentCommentsPage === 1">
+        <button
+          type="button"
+          class="page-link"
+          [disabled]="currentCommentsPage === 1"
+          (click)="changeCommentsPage(currentCommentsPage - 1)"
+        >
+          Anterior
+        </button>
+      </li>
+
+      @for (page of [].constructor(totalCommentsPages); track $index) {
+        <li class="page-item" [class.active]="currentCommentsPage === $index + 1">
+          <button
+            type="button"
+            class="page-link"
+            (click)="changeCommentsPage($index + 1)"
+          >
+            {{ $index + 1 }}
+          </button>
+        </li>
+      }
+
+      <li class="page-item" [class.disabled]="currentCommentsPage === totalCommentsPages">
+        <button
+          type="button"
+          class="page-link"
+          [disabled]="currentCommentsPage === totalCommentsPages"
+          (click)="changeCommentsPage(currentCommentsPage + 1)"
+        >
+          Siguiente
+        </button>
+      </li>
+    </ul>
+  </nav>
+}
+  }
+</section>
+
+
+      </section>
+    </div>
+  </main>
+}
