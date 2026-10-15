@@ -38,6 +38,25 @@
             minlength="8"
             required>
         </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña *</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          placeholder="Repite tu contraseña"
+          autocomplete="new-password"
+          required>
+      </div>
+
+      <small
+        class="validation-error"
+        *ngIf="confirmPassword && form.password !== confirmPassword">
+        Las contraseñas no coinciden.
+      </small>
+
       </div>
 
       <div class="form-section">
@@ -147,15 +166,23 @@
       <div class="form-section">
         <h2>Medios de contacto</h2>
 
-        <div class="form-group">
-          <label for="whatsapp">WhatsApp</label>
-          <input
-            id="whatsapp"
-            type="tel"
-            name="whatsapp"
-            [(ngModel)]="form.whatsapp"
-            placeholder="Número con indicativo">
-        </div>
+       <div class="form-group">
+      <label for="whatsapp">WhatsApp</label>
+      <input
+        id="whatsapp"
+        type="tel"
+        name="whatsapp"
+        [(ngModel)]="form.whatsapp"
+        (input)="validateWhatsApp($event)"
+        placeholder="Número con indicativo"
+        inputmode="numeric"
+        autocomplete="tel">
+      <small
+        class="validation-error"
+        *ngIf="whatsappError">
+        {{ whatsappError }}
+      </small>
+    </div>
 
         <div class="form-group">
           <label for="telegram">Telegram</label>

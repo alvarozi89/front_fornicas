@@ -35,6 +35,8 @@ export class Register {
 
   errorMessage = '';
   successMessage = '';
+  confirmPassword: '' | undefined;
+  whatsappError = '';
 
   form: RegisterData = {
     email: '',
@@ -52,6 +54,22 @@ export class Register {
   constructor() {
     this.loadCities();
   }
+
+ validateWhatsApp(event?: Event): void {
+  const input = event?.target as HTMLInputElement | undefined;
+  const value = input?.value ?? this.form.whatsapp ?? '';
+  const numbersOnly = value.replace(/\D/g, '');
+
+  this.form.whatsapp = numbersOnly;
+
+  if (input) {
+    input.value = numbersOnly;
+  }
+
+  this.whatsappError = value !== numbersOnly
+    ? 'Ingresa solo números en WhatsApp.'
+    : '';
+}
 
   filterCities(): void {
   const search = this.citySearch.trim().toLowerCase();
@@ -104,6 +122,11 @@ export class Register {
       !this.form.city_id
     ) {
       this.errorMessage = 'Completa todos los campos obligatorios.';
+      return;
+    }
+
+     if (this.form.password !== this.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
 
