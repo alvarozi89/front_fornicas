@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "npx http-server dist/fornicas-web/browser -p $PORT -c-1 -i index.csr.html",
+   "start": "npx http-server dist/fornicas-web/browser -p $PORT -c-1",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:fornicas-web": "node dist/fornicas-web/server/server.mjs",
-    "heroku-postbuild": "npm run build"
+  "heroku-postbuild": "npm run build && node -e \"require('fs').copyFileSync('dist/fornicas-web/browser/index.csr.html','dist/fornicas-web/browser/index.html')\""
   },
   "private": true,
   "packageManager": "npm@9.3.0",
