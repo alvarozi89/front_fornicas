@@ -5,6 +5,7 @@
     "ng": "ng",
    "start": "npx http-server dist/fornicas-web/browser -p $PORT -c-1",
     "build": "ng build",
+    "build:cloudflare": "ng build && node -e \"require('fs').copyFileSync('dist/fornicas-web/browser/index.csr.html','dist/fornicas-web/browser/index.html')\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:fornicas-web": "node dist/fornicas-web/server/server.mjs",
