@@ -1,15 +1,15 @@
 {
   "name": "fornicas-web",
   "version": "0.0.0",
-"scripts": {
-  "ng": "ng",
-  "start": "npx http-server dist/fornicas-web/browser -p $PORT -i index.csr.html --spa",
-  "build": "ng build",
-  "watch": "ng build --watch --configuration development",
-  "test": "ng test",
-  "serve:ssr:fornicas-web": "node dist/fornicas-web/server/server.mjs",
-  "heroku-postbuild": "npm run build"
-},
+  "scripts": {
+    "ng": "ng",
+    "start": "npx http-server dist/fornicas-web/browser -p $PORT -c-1 -i index.csr.html",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:fornicas-web": "node dist/fornicas-web/server/server.mjs",
+    "heroku-postbuild": "npm run build"
+  },
   "private": true,
   "packageManager": "npm@9.3.0",
   "dependencies": {
