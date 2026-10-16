@@ -1,113 +1,118 @@
 import {
-  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  signal
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { AuthStateService } from '../../../core/services/auth-state.service';
 import { NotificationService } from '../../../core/services/notification';
-
 import { MyProfileService } from '../../../core/services/my-profile';
 import { Profile } from '../../../core/models/profile';
 import { Subscription } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-selector: 'app-navbar',
-standalone: true,
-imports: [RouterLink],
-templateUrl: './navbar.html',
-styleUrl: './navbar.css'
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './navbar.html',
+  styleUrl: './navbar.css'
 })
 export class Navbar implements OnInit, OnDestroy {
-private readonly authState = inject(AuthStateService);
-private readonly router = inject(Router);
-private readonly notificationService = inject(NotificationService);
-private readonly myProfileService = inject(MyProfileService);
-private readonly cdr = inject(ChangeDetectorRef);
-private authSubscription?: Subscription;
-profile: Profile | null = null;
+  private readonly authState = inject(AuthStateService);
+  private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
+  private readonly myProfileService = inject(MyProfileService);
 
-profilePhotoUrl: string | null = null;
+  private authSubscription?: Subscription;
 
-unreadCount = 0;
-ngOnDestroy(): void {
-  this.authSubscription?.unsubscribe();
-}
-get isAuthenticated(): boolean {
-return this.authState.isAuthenticated();
-}
+  // 🚀 Definimos el estado mediante Signals (cero necesidad de cdr)
+  profile = signal<Profile | null>(null);
+  profilePhotoUrl = signal<string | null>(null);
+  unreadCount = signal<number>(0);
 
-get email(): string {
-return this.authState.getCurrentUser()?.email ?? '';
-}
-
-get isWoman(): boolean {
-return this.authState.getRole() === 'WOMAN';
-}
-
-ngOnInit(): void {
-  this.authSubscription = this.authState.authenticated$.subscribe(
-    (authenticated) => {
-
-      if (authenticated && this.isWoman) {
-        this.loadUnreadCount();
-        this.loadProfilePhoto();
-        this.cdr.detectChanges();
-      } else {
-        this.profile = null;
-        this.profilePhotoUrl = null;
-        this.unreadCount = 0;
-        this.cdr.detectChanges()
+  ngOnInit(): void {
+    this.authSubscription = this.authState.authenticated$.subscribe(
+      (authenticated) => {
+        if (authenticated && this.isWoman) {
+          this.loadUnreadCount();
+          this.loadProfilePhoto();
+        } else {
+          this.profile.set(null);
+          this.profilePhotoUrl.set(null);
+          this.unreadCount.set(0);
+        }
       }
-    }
-  );
-}
+    );
+  }
 
-loadUnreadCount(): void {
-this.notificationService.getUnreadCount().subscribe({
-next: (response) => {
-this.unreadCount = response.data.unread;
-  this.cdr.detectChanges();
-},
-error: (error) => {
-console.error('Error al consultar notificaciones:', error);
-}
-});
-}
-loadProfilePhoto(): void {
+  ngOnDestroy(): void {
+    this.authSubscription?.unsubscribe();
+  }
 
-this.myProfileService.getMyProfile().subscribe({
-next: (response) => {
-this.profile = response.data;
-console.log('Perfil recibido en la barra:', response.data);
-console.log('Fotos del perfil:', response.data.photos);
+  get isAuthenticated(): boolean {
+    return this.authState.isAuthenticated();
+  }
 
-  this.cdr.detectChanges();
-  const mainPhoto = this.profile.photos?.find(photo => photo.is_main)
-    ?? this.profile.photos?.[0];
+  get email(): string {
+    return this.authState.getCurrentUser()?.email ?? '';
+  }
 
-  this.profilePhotoUrl = mainPhoto
-  ? `${environment.apiUrlPhoto}${mainPhoto.url}`
-  : null;
+  get isWoman(): boolean {
+    return this.authState.getRole() === 'WOMAN';
+  }
 
-},
-error: (error) => {
-  console.error('Error al cargar la foto de perfil:', error);
-  this.profilePhotoUrl = null;
-}
+  loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (response) => {
+        // Al actualizar el signal, Angular redibuja la vista automáticamente
+        this.unreadCount.set(response.data.unread);
+      },
+      error: (error) => {
+        console.error('Error al consultar notificaciones:', error);
+      }
+    });
+  }
 
+  loadProfilePhoto(): void {
+    this.myProfileService.getMyProfile().subscribe({
+      next: (response) => {
+        const profileData = response.data;
+        this.profile.set(profileData);
 
-});
-}
+        const mainPhoto = profileData.photos?.find(photo => photo.is_main)
+          ?? profileData.photos?.[0];
 
+        if (mainPhoto && mainPhoto.url) {
+          const baseUrl = environment.apiUrlPhoto.endsWith('/')
+            ? environment.apiUrlPhoto.slice(0, -1)
+            : environment.apiUrlPhoto;
 
-logout(): void {
-this.authState.logout();
-this.router.navigate(['/auth/login']);
+          const photoPath = mainPhoto.url.startsWith('/')
+            ? mainPhoto.url
+            : `/${mainPhoto.url}`;
 
-}
+          this.profilePhotoUrl.set(`${baseUrl}${photoPath}`);
+        } else {
+          this.profilePhotoUrl.set(null);
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar la foto de perfil:', error);
+        this.profilePhotoUrl.set(null);
+      }
+    });
+  }
+
+  logout(): void {
+    this.authState.logout();
+    this.profile.set(null);
+    this.profilePhotoUrl.set(null);
+    this.unreadCount.set(0);
+    this.router.navigate(['/auth/login']);
+  }
 }

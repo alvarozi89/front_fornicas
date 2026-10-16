@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" routerLink="/">
-  @if (profilePhotoUrl) {
+  @if (profilePhotoUrl()) {
     <img
       [src]="profilePhotoUrl"
       alt="Foto de perfil"
@@ -13,7 +13,7 @@
     <img
       src="/images/fornicas-logo.png"
       alt="Logo de Fornicas"
-      class="brand-logo"
+      class="profile-navbar-photo"
     />
   }
 </a>
@@ -60,9 +60,9 @@
             <span>Notificaciones</span>
 
 
-        @if (unreadCount > 0) {
+        @if (unreadCount() > 0) {
           <span class="badge rounded-pill bg-danger ms-1">
-            {{ unreadCount > 99 ? '99+' : unreadCount }}
+            {{ unreadCount() > 99 ? '99+' : unreadCount }}
           </span>
         }
 
@@ -91,7 +91,7 @@
               <li>
               <a
           class="dropdown-item"
-          [routerLink]="profile ? ['/perfil', profile.id] : '/panel'"
+          [routerLink]="profile ()? ['/perfil', profile()!.id ] : '/panel'"
         >
           Mi perfil
         </a>
