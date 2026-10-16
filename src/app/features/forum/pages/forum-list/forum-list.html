@@ -1,0 +1,232 @@
+<div class="container py-5 forum-container">
+
+
+<!-- Encabezado -->
+  <div class="row align-items-center mb-4 pb-4 border-bottom border-secondary g-3">
+
+    <!-- Títulos -->
+    <div class="col-12 col-md-6">
+      <h1 class="fw-bold text-black mb-1">Foro de la Comunidad</h1>
+      <p class="text-dark mb-0">Explora debates, realiza preguntas o comparte experiencias con otros usuarios.</p>
+    </div>
+
+    <!-- Controles (Buscador y Botón) -->
+    <div class="col-12 col-md-6 d-flex flex-sm-row align-items-center justify-content-md-end gap-2">
+
+      <!-- Buscador de Ciudad Estilizado (Sin fondo negro sólido) -->
+    <!-- Buscador de Ciudad Estilizado que Mantiene la Selección -->
+      <div class="position-relative flex-grow-1 flex-sm-grow-0" style="min-width: 240px;">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-transparent text-secondary border-secondary rounded-start-3">
+            📍
+          </span>
+          <input
+            type="text"
+            list="filterCitiesList"
+            [(ngModel)]="citySearchText"
+            (input)="filterCities()"
+            (change)="onCitySelected(citySearchText)"
+            placeholder="Filtrar por ciudad..."
+            class="form-control bg-transparent text-black border-secondary shadow-none">
+
+          <button
+            *ngIf="selectedCityId !== null || citySearchText"
+            (click)="clearCityFilter()"
+            class="btn btn-outline-secondary border-secondary bg-transparent text-secondary px-2"
+            title="Limpiar filtro">
+            ✕
+          </button>
+        </div>
+        <datalist id="filterCitiesList">
+          <option *ngFor="let city of cities" [value]="city.name"></option>
+        </datalist>
+      </div>
+
+      <!-- Botón Crear Tema -->
+      <button
+        (click)="openModal()"
+        class="btn btn-purple px-4 py-2 rounded-3 shadow-sm fw-semibold d-flex align-items-center gap-2 text-nowrap">
+        <span>+</span> Crear Tema
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-purple" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-secondary mt-3 small">Cargando temas del foro...</p>
+  </div>
+
+  <!-- Lista vacía -->
+  <div *ngIf="!isLoading && topics.length === 0" class="text-center py-5 rounded-4 p-5 shadow-sm forum-card">
+    <div class="mb-3 text-secondary fs-1">💬</div>
+    <h5 class="text-white fw-semibold">Aún no hay temas creados</h5>
+    <p class="text-secondary small mb-3">Sé el primero en iniciar una conversación en la comunidad.</p>
+    <button (click)="openModal()" class="btn btn-outline-light btn-sm px-4 rounded-3">¡Publicar primer tema!</button>
+  </div>
+
+  <!-- Lista de Temas -->
+  <div *ngIf="!isLoading && topics.length > 0" class="d-flex flex-column gap-3">
+    <div *ngFor="let topic of topics" class="card rounded-4 p-4 shadow-sm forum-card">
+      <div class="card-body p-0">
+
+        <!-- Cabecera de la tarjeta: Nickname, Ciudad y Fecha -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill px-3 py-1 fw-medium badge-nickname">
+              &#64;{{ topic.nickname }}
+            </span>
+            <!-- Badge de la ciudad -->
+            <span *ngIf="topic.city" class="badge rounded-pill bg-secondary text-light px-2 py-1 small">
+              📍 {{ topic.city.name }}
+            </span>
+          </div>
+          <small class="text-secondary">{{ topic.created_at | date:'mediumDate' }}</small>
+        </div>
+
+        <!-- Título -->
+        <h4 class="mb-2">
+          <a [routerLink]="['/forum', topic.id]" class="text-decoration-none text-secondary fw-bold stretched-link title-link">
+            {{ topic.title }}
+          </a>
+        </h4>
+
+        <!-- Contenido resumido -->
+        <p class="text-secondary small mb-3 text-truncate">
+          {{ topic.content }}
+        </p>
+
+        <!-- Pie de tarjeta -->
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-3 pagination-divider">
+          <span class="badge px-2 py-1 badge-status">
+            {{ topic.status }}
+          </span>
+          <span class="small fw-semibold d-flex align-items-center gap-1 text-purple">
+            Ver conversación &rarr;
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginador con Números -->
+  <div *ngIf="!isLoading && totalPages > 1" class="d-flex justify-content-center align-items-center gap-2 mt-4 pt-3 pagination-divider">
+
+    <button
+      class="btn btn-sm rounded-3 px-3 btn-pagination"
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      &larr; Anterior
+    </button>
+
+    <div class="d-flex gap-1">
+      <button
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        class="btn btn-sm rounded-3 px-3"
+        [ngClass]="currentPage === (i + 1) ? 'btn-purple text-white fw-bold' : 'btn-pagination '"
+        (click)="changePage(i + 1)">
+        {{ i + 1 }}
+      </button>
+    </div>
+
+    <button
+      class="btn btn-sm rounded-3 px-3 btn-pagination"
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      Siguiente &rarr;
+    </button>
+
+  </div>
+
+  <!-- Modal para Crear Tema -->
+  <div class="modal fade show modal-backdrop-custom" tabindex="-1" style="display: block;" *ngIf="showCreateModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-light rounded-4 shadow-lg p-3 modal-content-custom">
+        <div class="modal-header pb-3 modal-header-custom">
+          <h5 class="modal-title fw-bold text-black">Crear Nuevo Tema</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body pt-4">
+          <form (ngSubmit)="onCreateTopic()">
+
+            <!-- Apodo -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Tu Apodo / Nickname</label>
+              <input
+                type="text"
+                [(ngModel)]="newTopic.nickname"
+                name="nickname"
+                required
+                placeholder="Ej: AlvaroDev"
+                class="form-control rounded-3 py-2 px-3 form-input-custom">
+            </div>
+
+            <!-- Ciudad del Nuevo Tema (Con buscador / datalist) -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Ciudad</label>
+              <input
+                type="text"
+                list="modalCitiesList"
+                [(ngModel)]="modalCitySearchText"
+                (input)="selectModalCity(modalCitySearchText)"
+                name="modalCitySearch"
+                required
+                placeholder="Escribe o busca tu ciudad..."
+                class="form-control rounded-3 py-2 px-3 form-input-custom bg-dark text-white">
+
+              <datalist id="modalCitiesList">
+                <option *ngFor="let city of cities" [value]="city.name"></option>
+              </datalist>
+            </div>
+
+            <!-- Título -->
+            <div class="mb-3">
+              <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Título del Debate</label>
+              <input
+                type="text"
+                [(ngModel)]="newTopic.title"
+                name="title"
+                required
+                placeholder="¿De qué quieres hablar?"
+                class="form-control rounded-3 py-2 px-3 form-input-custom">
+            </div>
+
+            <!-- Contenido -->
+            <div class="mb-4">
+              <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Contenido</label>
+              <textarea
+                [(ngModel)]="newTopic.content"
+                name="content"
+                rows="4"
+                required
+                placeholder="Escribe los detalles de tu tema..."
+                class="form-control rounded-3 py-2 px-3 form-input-custom"></textarea>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-flex justify-content-end gap-2 pt-2">
+              <button
+                type="button"
+                (click)="closeModal()"
+                class="btn btn-outline-secondary rounded-3 px-4 btn-sm">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                [disabled]="isSubmitting"
+                class="btn btn-purple rounded-3 px-4 btn-sm fw-semibold">
+                {{ isSubmitting ? 'Publicando...' : 'Publicar Tema' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

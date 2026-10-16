@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guard/auth.guard';
 import { roleGuard } from './core/guard/role.guard';
 
+
 export const routes: Routes = [
 {
 path: '',
@@ -58,6 +59,10 @@ import('./pages/profile-detail/profile-detail')
   loadComponent: () =>
     import('./features/woman/pages/dashboard/dashboard')
       .then(m => m.Dashboard)
+},
+{
+  path: 'forum',
+  loadChildren: () => import('./features/forum/forum.routes').then(m => m.FORUM_ROUTES)
 },
 {
 path: '**',
