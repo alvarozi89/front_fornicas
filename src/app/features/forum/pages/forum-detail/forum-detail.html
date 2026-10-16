@@ -1,0 +1,156 @@
+<div class="container py-5 forum-container">
+<!-- Navegación superior y Título de la Sección -->
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+    <div>
+      <span class="text-uppercase tracking-wider text-purple fw-bold small">Foro de Discusión</span>
+      <h2 class="text-black fw-bold m-0 fs-3">Detalle del Tema</h2>
+    </div>
+
+  </div>
+  <!-- Botón Regresar -->
+  <div class="mb-4">
+    <a routerLink="/forum" class="btn btn-outline-secondary btn-sm rounded-3 px-3">
+      &larr; Volver al Foro
+    </a>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-purple" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-secondary mt-3 small">Cargando conversación...</p>
+  </div>
+
+  <!-- Detalle del Tema -->
+  <div *ngIf="!isLoading && topic" class="card rounded-4 p-4 shadow-sm forum-card mb-4">
+    <div class="card-body p-0">
+
+      <!-- Cabecera -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge rounded-pill px-3 py-1 fw-medium badge-nickname">
+            &#64;{{ topic.nickname }}
+          </span>
+          <span *ngIf="topic.city" class="badge rounded-pill bg-secondary text-light px-2 py-1 small">
+            📍 {{ topic.city.name }}
+          </span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <small class="text-white">{{ topic.created_at | date:'mediumDate' }}</small>
+          <button (click)="onReportTopic()" class="btn btn-sm btn-outline-danger border-0 py-0" title="Reportar tema">
+            ⚠️ Reportar
+          </button>
+        </div>
+      </div>
+
+      <!-- Título y Contenido -->
+      <h3 class="text-white fw-bold mb-3">{{ topic.title }}</h3>
+      <p class="text-white mb-0 fs-6" style="white-space: pre-line;">{{ topic.content }}</p>
+
+    </div>
+  </div>
+
+  <!-- Sección de Comentarios -->
+  <div *ngIf="!isLoading" class="mb-5">
+    <h5 class="text-white fw-bold mb-3">Respuestas y Comentarios ({{ comments.length }})</h5>
+
+    <!-- Lista vacía de Comentarios -->
+    <div *ngIf="comments.length === 0" class="text-center py-4 rounded-4 forum-card mb-4">
+      <p class="text-white small mb-0">Aún no hay comentarios en este tema. ¡Sé el primero en responder!</p>
+    </div>
+
+    <!-- Lista de Comentarios Paginados -->
+    <div *ngIf="comments.length > 0" class="d-flex flex-column gap-3 mb-4">
+      <div *ngFor="let comment of pagedComments" class="card rounded-4 p-3 shadow-sm forum-card">
+        <div class="card-body p-0">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge rounded-pill px-3 py-1 fw-medium badge-nickname">
+              &#64;{{ comment.nickname }}
+            </span>
+            <div class="d-flex align-items-center gap-2">
+              <small class="text-white">{{ comment.created_at | date:'short' }}</small>
+              <button (click)="onReportComment(comment.id)" class="btn btn-sm text-danger border-0 p-0" title="Reportar comentario">
+                ⚠️
+              </button>
+            </div>
+          </div>
+          <p class="text-white small mb-0 mt-2" style="white-space: pre-line;">{{ comment.content }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginador de Comentarios -->
+    <div *ngIf="commentsTotalPages > 1" class="d-flex justify-content-center align-items-center gap-2 mb-4 pt-2 pagination-divider">
+      <button
+        class="btn btn-sm rounded-3 px-3 btn-pagination"
+        [disabled]="commentsCurrentPage === 1"
+        (click)="changeCommentsPage(commentsCurrentPage - 1)">
+        &larr; Anterior
+      </button>
+
+      <div class="d-flex gap-1">
+        <button
+          *ngFor="let page of [].constructor(commentsTotalPages); let i = index"
+          class="btn btn-sm rounded-3 px-3"
+          [ngClass]="commentsCurrentPage === (i + 1) ? 'btn-purple text-white fw-bold' : 'btn-pagination'"
+          (click)="changeCommentsPage(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <button
+        class="btn btn-sm rounded-3 px-3 btn-pagination"
+        [disabled]="commentsCurrentPage === commentsTotalPages"
+        (click)="changeCommentsPage(commentsCurrentPage + 1)">
+        Siguiente &rarr;
+      </button>
+    </div>
+
+  <!-- Formulario para Nuevo Comentario -->
+    <div class="card rounded-4 p-4 forum-card shadow-sm mt-4">
+      <h5 class="text-white fw-bold mb-3">Escribe una respuesta</h5>
+
+      <!-- Alerta de confirmación al publicar -->
+      <div *ngIf="commentSuccessMessage" class="alert alert-success bg-opacity-10 border-success text-success rounded-3 mb-3 py-2 px-3 small">
+        ✅ {{ commentSuccessMessage }}
+      </div>
+
+      <form (ngSubmit)="onCreateComment()">
+        <div class="mb-3">
+          <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Tu Apodo / Nickname</label>
+          <input
+            type="text"
+            [(ngModel)]="newComment.nickname"
+            name="nickname"
+            required
+            placeholder="Ej: AlvaroDev"
+            class="form-control rounded-3 py-2 px-3 form-input-custom">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-uppercase text-secondary fw-bold form-label-custom">Comentario</label>
+          <textarea
+            [(ngModel)]="newComment.content"
+            name="content"
+            rows="3"
+            required
+            placeholder="Escribe tu opinión o respuesta..."
+            class="form-control rounded-3 py-2 px-3 form-input-custom"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center gap-3">
+          <button
+            type="submit"
+            [disabled]="isSubmittingComment"
+            class="btn btn-purple rounded-3 px-4 btn-sm fw-semibold d-flex align-items-center gap-2">
+            <span *ngIf="isSubmittingComment" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            {{ isSubmittingComment ? 'Publicando comentario...' : 'Comentar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+</div>
