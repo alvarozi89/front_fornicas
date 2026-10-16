@@ -360,15 +360,17 @@
   </div>
 }
 
-<div class="mt-4">
-  <button
-    type="button"
-    class="btn btn-primary"
-    (click)="openReviewModal()"
-  >
-    Calificar y comentar
-  </button>
-</div>
+@if (!isProfileOwner) {
+  <div class="mt-4">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="openReviewModal()"
+    >
+      Calificar y comentar
+    </button>
+  </div>
+}
 <section class="mt-4">
   <h2 class="h5">Calificaciones</h2>
 

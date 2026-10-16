@@ -1,89 +1,116 @@
 <div class="login-container">
-
   <div class="login-card">
-
     <h1>Fornicas</h1>
-
     <p class="subtitle">Bienvenido de nuevo</p>
 
-
-
     <form (ngSubmit)="login()" #loginForm="ngForm">
-
       <div class="form-group">
-
         <label for="email">Correo electrónico</label>
-
         <input
-
           id="email"
-
           type="email"
-
           name="email"
-
           [(ngModel)]="credentials.email"
-
           placeholder="Ingresa tu correo"
-
           autocomplete="email"
-
           required
-
           email
-
         />
-
       </div>
-
-
 
       <div class="form-group">
-
         <label for="password">Contraseña</label>
-
         <input
-
           id="password"
-
           type="password"
-
           name="password"
-
           [(ngModel)]="credentials.password"
-
           placeholder="Ingresa tu contraseña"
-
           autocomplete="current-password"
-
           required
-
         />
-
       </div>
 
+      <!-- Enlace para abrir el Modal de Bootstrap -->
+      <div class="forgot-wrapper">
+        <button
+          type="button"
+          class="forgot-password-btn"
+          data-bs-toggle="modal"
+          data-bs-target="#forgotPasswordModal"
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+      </div>
 
-
-      @if (errorMessage) {
-
+      @if (errorMessage()) {
         <div class="error-message" role="alert">
-
-          {{ errorMessage }}
-
+          {{ errorMessage() }}
         </div>
-
       }
 
-
-
-      <button type="submit" [disabled]="loading || loginForm.invalid">
-
-        {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
-
+      <button type="submit" [disabled]="loading() || loginForm.invalid">
+        {{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}
       </button>
-
     </form>
-
   </div>
+</div>
 
+<!-- ================= MODAL DE BOOTSTRAP PARA RECUPERAR CONTRASEÑA ================= -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">Recuperar contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form (ngSubmit)="sendRecoveryEmail()" #forgotForm="ngForm">
+        <div class="modal-body">
+          <p class="text-muted" style="font-size: 0.9rem;">
+            Ingresa tu correo electrónico registrado y te enviaremos las instrucciones para restablecer tu contraseña.
+          </p>
+
+          <div class="form-group mb-3">
+            <label for="recoveryEmail" class="form-label">Correo electrónico</label>
+            <input
+              id="recoveryEmail"
+              type="email"
+              name="recoveryEmail"
+              class="form-control"
+              [(ngModel)]="recoveryEmail"
+              placeholder="tucorreo@example.com"
+              required
+              email
+            />
+          </div>
+
+          <!-- Mensaje de Error en el Modal (Usando señal con paréntesis) -->
+          @if (forgotErrorMessage()) {
+            <div class="alert alert-danger py-2" role="alert" style="font-size: 0.85rem;">
+              {{ forgotErrorMessage() }}
+            </div>
+          }
+
+          <!-- Mensaje de Éxito en el Modal (Usando señal con paréntesis) -->
+          @if (forgotSuccessMessage()) {
+            <div class="alert alert-success py-2" role="status" style="font-size: 0.85rem;">
+              {{ forgotSuccessMessage() }}
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button
+            type="submit"
+            class="btn btn-primary btn-sm"
+            [disabled]="forgotLoading() || forgotForm.invalid"
+          >
+            {{ forgotLoading() ? 'Enviando...' : 'Enviar enlace' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

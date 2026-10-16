@@ -73,6 +73,16 @@ export class ProfilePage implements OnInit {
     telegram: ''
   };
 
+  // 🚀 Nuevas variables para el cambio de contraseña
+  passwordData = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+  isChangingPassword = false;
+  passwordError = '';
+  passwordSuccess = '';
+
   ngOnInit(): void {
     this.loadProfile();
     this.loadCities();
@@ -397,5 +407,44 @@ export class ProfilePage implements OnInit {
     };
 
     this.citySearch = this.getSelectedCityName();
+  }
+  // 🚀 Método para actualizar la contraseña desde el perfil
+  updatePassword(): void {
+    if (this.isChangingPassword) return;
+
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
+    if (this.passwordData.newPassword.length < 8) {
+      this.passwordError = 'La nueva contraseña debe tener al menos 8 caracteres.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+      this.passwordError = 'Las nuevas contraseñas no coinciden.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.isChangingPassword = true;
+
+    this.profileService.updatePassword({
+      currentPassword: this.passwordData.currentPassword,
+      newPassword: this.passwordData.newPassword
+    }).subscribe({
+      next: response => {
+        this.passwordSuccess = response.message || 'Contraseña actualizada correctamente.';
+        this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
+        this.isChangingPassword = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error('Error al actualizar la contraseña:', error);
+        this.passwordError = error.error?.message ?? 'No fue posible actualizar la contraseña.';
+        this.isChangingPassword = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

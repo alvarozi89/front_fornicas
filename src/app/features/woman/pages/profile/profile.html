@@ -47,6 +47,15 @@
           (click)="startEditing()">
           ✎ Editar perfil
         </button>
+        <button
+  *ngIf="!isEditing"
+  type="button"
+  class="edit-button"
+  style="background-color: #2b6cb0; margin-right: 8px;"
+  data-bs-toggle="modal"
+  data-bs-target="#changePasswordModal">
+  🔒 Cambiar contraseña
+</button>
       </div>
 
       <form
@@ -156,6 +165,7 @@
               placeholder="Cuéntales un poco sobre ti..."></textarea>
           </label>
 
+
           <label>
             WhatsApp
             <input
@@ -175,6 +185,7 @@
               maxlength="100"
               placeholder="Usuario o enlace">
           </label>
+
         </div>
 
         <div class="form-actions">
@@ -386,4 +397,87 @@
     </div>
   </div>
 </div>
+<!-- ================= MODAL DE BOOTSTRAP PARA CAMBIAR CONTRASEÑA ================= -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Cambiar contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
+      <form (ngSubmit)="updatePassword()" #passwordForm="ngForm">
+        <div class="modal-body">
+          <p class="text-muted" style="font-size: 0.9rem;">
+            Ingresa tu contraseña actual y la nueva contraseña que deseas utilizar.
+          </p>
+
+          <!-- Mensaje de Error en el Modal -->
+          @if (passwordError) {
+            <div class="alert alert-danger py-2" role="alert" style="font-size: 0.85rem;">
+              {{ passwordError }}
+            </div>
+          }
+
+          <!-- Mensaje de Éxito en el Modal -->
+          @if (passwordSuccess) {
+            <div class="alert alert-success py-2" role="status" style="font-size: 0.85rem;">
+              {{ passwordSuccess }}
+            </div>
+          }
+
+          <div class="form-group mb-3">
+            <label for="currentPassword" class="form-label">Contraseña actual</label>
+            <input
+              id="currentPassword"
+              type="password"
+              name="currentPassword"
+              class="form-control"
+              [(ngModel)]="passwordData.currentPassword"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="newPassword" class="form-label">Nueva contraseña</label>
+            <input
+              id="newPassword"
+              type="password"
+              name="newPassword"
+              class="form-control"
+              [(ngModel)]="passwordData.newPassword"
+              minlength="8"
+              placeholder="Mínimo 8 caracteres"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="confirmPassword" class="form-label">Confirmar nueva contraseña</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              name="confirmPassword"
+              class="form-control"
+              [(ngModel)]="passwordData.confirmPassword"
+              placeholder="Repite la nueva contraseña"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button
+            type="submit"
+            class="btn btn-primary btn-sm"
+            [disabled]="isChangingPassword || passwordForm.invalid"
+          >
+            {{ isChangingPassword ? 'Actualizando...' : 'Guardar contraseña' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -28,9 +28,29 @@ isLoggedIn(): boolean {
     );
   }
 
+  resetPassword(token: string, newPassword: string): Observable<{
+  success: boolean;
+  message: string;
+}> {
+  return this.http.post<{
+    success: boolean;
+    message: string;
+  }>(`${this.apiUrl}/reset-password`, {
+    token,
+    newPassword
+  });
+}
+
 getCurrentUser(): Observable<{ success: boolean; data: any }> {
   return this.http.get<{ success: boolean; data: any }>(
     `${this.apiUrl}/me`
   );
 }
+// 🚀 Nuevo método para solicitar el restablecimiento de contraseña
+  forgotPassword(email: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.apiUrl}/forgot-password`,
+      { email }
+    );
+  }
 }

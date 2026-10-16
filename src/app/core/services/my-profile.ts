@@ -15,7 +15,11 @@ export interface UpdateMyProfileResponse {
   message: string;
   data: Profile;
 }
-
+// 🚀 Interfaz para la respuesta del cambio de contraseña
+export interface UpdatePasswordResponse {
+  success: boolean;
+  message: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -32,6 +36,16 @@ export class MyProfileService {
   ): Observable<UpdateMyProfileResponse> {
     return this.http.put<UpdateMyProfileResponse>(
       `${this.apiUrl}/me`,
+      data
+    );
+  }
+
+  updatePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Observable<UpdatePasswordResponse> {
+    return this.http.put<UpdatePasswordResponse>(
+      `${this.apiUrl}/update-password`,
       data
     );
   }

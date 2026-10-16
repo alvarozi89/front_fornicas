@@ -99,3 +99,28 @@
     padding: 26px 22px;
   }
 }
+.forgot-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Lo centra por completo */
+  margin-bottom: 20px;
+}
+
+.forgot-password-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #7e22ce !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+  width: auto !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: color 0.2s;
+}
+
+.forgot-password-btn:hover {
+  color: #581c87 !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+}
