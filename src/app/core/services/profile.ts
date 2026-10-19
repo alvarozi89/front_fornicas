@@ -31,4 +31,13 @@ export class ProfileService {
   getProfileById(id: number): Observable<ProfileDetailResponse> {
   return this.http.get<ProfileDetailResponse>(`${this.apiUrl}/${id}`);
 }
+// 🚫 Dar de baja la cuenta
+  deactivateAccount(): Observable<any> {
+    return this.http.put(`${this.apiUrl}/deactivate`, {});
+  }
+
+  // ✨ Reactivar la cuenta
+  reactivateAccount(): Observable<any> {
+    return this.http.put(`${this.apiUrl}/reactivate`, {});
+  }
 }
