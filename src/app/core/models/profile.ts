@@ -41,6 +41,7 @@ export interface Profile {
   photos: ProfilePhoto[];
   videos?: ProfileVideo[];
   cityData: ProfileCity | null;
+  is_virtual?: boolean;
 
   total_views?: number;
   rating?: {

@@ -108,47 +108,86 @@
 
 
 
-<label class="city-field">
-  Ciudad *
-  <div class="city-search-container">
-    <input
-      type="text"
-      name="citySearch"
-      [(ngModel)]="citySearch"
-      (ngModelChange)="filterCities()"
-      (focus)="onCitySearchFocus()"
-      (blur)="showCitySuggestions = false"
-      autocomplete="off"
-      placeholder="Escribe el nombre de tu ciudad..."
-      required>
+<div class="form-group full-width">
+  <label class="form-label fw-semibold">Modalidad de servicio *</label>
 
-    <div
-      class="city-suggestions"
-      *ngIf="showCitySuggestions && filteredCities.length > 0">
-
-      <button
-        type="button"
-        class="city-suggestion"
-        *ngFor="let city of filteredCities"
-        (mousedown)="selectCity(city)">
-        {{ city.name }}
-      </button>
+  <!-- Tarjetas interactivas para elegir modalidad -->
+  <div class="row g-2 mb-3">
+    <div class="col-6">
+      <div
+        class="p-3 border rounded-3 text-center shadow-sm"
+        [style.border-color]="!formData.is_virtual ? 'var(--bs-primary, #6f42c1)' : '#dee2e6'"
+        [style.background-color]="!formData.is_virtual ? 'rgba(111, 66, 193, 0.05)' : '#fff'"
+        (click)="setVirtualMode(false)"
+        style="cursor: pointer;">
+        <div class="fw-bold text-dark">📍 Presencial</div>
+        <small class="text-muted">En una ciudad</small>
+      </div>
     </div>
 
-    <p
-      class="city-empty"
-      *ngIf="showCitySuggestions && citySearch.trim() && filteredCities.length === 0">
-      No encontramos coincidencias.
-    </p>
-    <small class="city-error" *ngIf="cityError">
-  {{ cityError }}
-</small>
+    <div class="col-6">
+      <div
+        class="p-3 border rounded-3 text-center shadow-sm"
+        [style.border-color]="formData.is_virtual ? 'var(--bs-primary, #6f42c1)' : '#dee2e6'"
+        [style.background-color]="formData.is_virtual ? 'rgba(111, 66, 193, 0.05)' : '#fff'"
+        (click)="setVirtualMode(true)"
+        style="cursor: pointer;">
+        <div class="fw-bold text-dark">🌐 Virtual</div>
+        <small class="text-muted">Todas las ciudades</small>
+      </div>
+    </div>
   </div>
 
-  <small class="city-selected" *ngIf="formData.city_id">
-    Ciudad seleccionada: {{ getSelectedCityName() }}
-  </small>
-</label>
+  <!-- Buscador de ciudad (Solo se muestra si NO es virtual) -->
+  <ng-container *ngIf="!formData.is_virtual; else virtualAlert">
+    <div class="city-search-container">
+      <label for="editCitySearch">Ciudad *</label>
+      <input
+        id="editCitySearch"
+        type="text"
+        name="citySearch"
+        [(ngModel)]="citySearch"
+        (ngModelChange)="filterCities()"
+        (focus)="onCitySearchFocus()"
+        (blur)="onCitySearchBlur()"
+        autocomplete="off"
+        placeholder="Escribe el nombre de tu ciudad..."
+        required>
+
+      <div
+        class="city-suggestions"
+        *ngIf="showCitySuggestions && filteredCities.length > 0">
+        <button
+          type="button"
+          class="city-suggestion"
+          *ngFor="let city of filteredCities"
+          (mousedown)="selectCity(city)">
+          {{ city.name }}
+        </button>
+      </div>
+
+      <p
+        class="city-empty"
+        *ngIf="showCitySuggestions && citySearch.trim() && filteredCities.length === 0">
+        No encontramos coincidencias.
+      </p>
+
+      <small class="city-error" *ngIf="cityError">
+        {{ cityError }}
+      </small>
+    </div>
+
+    <small class="city-selected" *ngIf="formData.city_id && formData.city_id !== 1106">
+      Ciudad seleccionada: {{ getSelectedCityName() }}
+    </small>
+  </ng-container>
+
+  <ng-template #virtualAlert>
+    <div class="alert alert-info py-2 small mb-0 mt-2">
+      ✨ Tu perfil aparecerá disponible de forma virtual en todas las ciudades del país.
+    </div>
+  </ng-template>
+</div>
 
 
 

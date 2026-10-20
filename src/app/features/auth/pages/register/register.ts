@@ -1,6 +1,5 @@
-
 import { CommonModule } from '@angular/common';
-import { Component, inject,ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
@@ -39,7 +38,8 @@ export class Register {
   confirmPassword: '' | undefined;
   whatsappError = '';
 
-  form: RegisterData = {
+
+  form: RegisterData & { is_virtual: boolean } = {
     email: '',
     password: '',
     name: '',
@@ -49,31 +49,48 @@ export class Register {
     title: '',
     description: '',
     whatsapp: '',
-    telegram: ''
+    telegram: '',
+    is_virtual: false // 👈 Agregado
   };
 
   constructor() {
     this.loadCities();
   }
 
- validateWhatsApp(event?: Event): void {
-  const input = event?.target as HTMLInputElement | undefined;
-  const value = input?.value ?? this.form.whatsapp ?? '';
-  const numbersOnly = value.replace(/\D/g, '');
+  validateWhatsApp(event?: Event): void {
+    const input = event?.target as HTMLInputElement | undefined;
+    const value = input?.value ?? this.form.whatsapp ?? '';
+    const numbersOnly = value.replace(/\D/g, '');
 
-  this.form.whatsapp = numbersOnly;
+    this.form.whatsapp = numbersOnly;
 
-  if (input) {
-    input.value = numbersOnly;
+    if (input) {
+      input.value = numbersOnly;
+    }
+
+    this.whatsappError = value !== numbersOnly
+      ? 'Ingresa solo números en WhatsApp.'
+      : '';
   }
 
-  this.whatsappError = value !== numbersOnly
-    ? 'Ingresa solo números en WhatsApp.'
-    : '';
-}
+  onVirtualChange(event: any): void {
+    const isVirtual = event.target.checked;
+    this.form.is_virtual = isVirtual;
+
+    if (isVirtual) {
+      this.form.city_id = 1106; // 👈 ID de la ciudad Virtual en la BD
+      this.citySearch = 'Virtual';
+      this.showCitySuggestions = false;
+    } else {
+      this.form.city_id = 0;
+      this.citySearch = '';
+    }
+  }
 
   filterCities(): void {
-  const search = this.citySearch.trim().toLowerCase();
+    if (this.form.is_virtual) return;
+
+    const search = this.citySearch.trim().toLowerCase();
 
     this.form.city_id = 0;
 
@@ -93,7 +110,9 @@ export class Register {
   }
 
   onCitySearchFocus(): void {
-    this.filterCities();
+    if (!this.form.is_virtual) {
+      this.filterCities();
+    }
   }
 
   loadCities(): void {
@@ -126,7 +145,7 @@ export class Register {
       return;
     }
 
-     if (this.form.password !== this.confirmPassword) {
+    if (this.form.password !== this.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
@@ -163,33 +182,42 @@ export class Register {
 
     this.isSubmitting = true;
 
-   this.registerService.register(this.form).subscribe({
-  next: (response) => {
-    this.isSubmitting = false;
+    this.registerService.register(this.form).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
 
-    if (response.success) {
-      this.successMessage = '¡Registro exitoso! Ya puedes iniciar sesión.';
+        if (response.success) {
+          this.successMessage = '¡Registro exitoso! Ya puedes iniciar sesión.';
 
-      setTimeout(() => {
-        this.router.navigate(['/auth/login']);
-      }, 1500);
-    }
-  },
- error: (err) => {
-    this.isSubmitting = false;
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 1500);
+        }
+      },
+      error: (err) => {
+        this.isSubmitting = false;
 
-    // Extrae directamente el mensaje que viene en la estructura de Express
-    const backendMessage = err.error?.message;
+        const backendMessage = err.error?.message;
 
-    this.errorMessage =
-      backendMessage ||
-      'No fue posible completar el registro.';
+        this.errorMessage =
+          backendMessage ||
+          'No fue posible completar el registro.';
 
-    console.log('Mensaje pintado:', this.errorMessage); // Para verificar en consola
-    // 🚀 Forzamos a Angular a repintar la vista de inmediato
-    this.cdr.detectChanges();
+        console.log('Mensaje pintado:', this.errorMessage);
+        this.cdr.detectChanges();
+      }
+    });
   }
-});
+  setVirtualMode(isVirtual: boolean): void {
+    this.form.is_virtual = isVirtual;
+
+    if (isVirtual) {
+      this.form.city_id = 1106; // ID 1106 para la ciudad Virtual
+      this.citySearch = 'VIRTUAL';
+      this.showCitySuggestions = false;
+    } else {
+      this.form.city_id = 0;
+      this.citySearch = '';
+    }
   }
 }
-

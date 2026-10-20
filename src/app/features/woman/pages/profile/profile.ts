@@ -70,7 +70,8 @@ export class ProfilePage implements OnInit {
     description: '',
     city_id: null as number | null,
     whatsapp: '',
-    telegram: ''
+    telegram: '',
+    is_virtual: false
   };
 
   // 🚀 Nuevas variables para el cambio de contraseña
@@ -392,8 +393,11 @@ export class ProfilePage implements OnInit {
     return this.photoService.getPhotoUrl(url);
   }
 
-  private copyProfileToForm(): void {
+ private copyProfileToForm(): void {
     if (!this.profile) return;
+
+    // Detectamos si es virtual (si tiene la bandera en true o el city_id es 1106)
+    const isVirtual = this.profile.is_virtual || this.profile.city_id === 1106;
 
     this.formData = {
       name: this.profile.name ?? '',
@@ -401,12 +405,18 @@ export class ProfilePage implements OnInit {
       nickname: this.profile.nickname ?? '',
       birth_date: this.profile.birth_date?.substring(0, 10) ?? '',
       description: this.profile.description ?? '',
-      city_id: this.profile.city_id,
+      city_id: isVirtual ? 1106 : (this.profile.city_id ?? 0),
       whatsapp: this.profile.whatsapp ?? '',
-      telegram: this.profile.telegram ?? ''
+      telegram: this.profile.telegram ?? '',
+      is_virtual: isVirtual // 👈 Agregamos la propiedad para las tarjetas interactivas
     };
 
-    this.citySearch = this.getSelectedCityName();
+    // Si es virtual, fijamos el texto en el buscador; si es presencial, usamos el nombre de la ciudad
+    if (isVirtual) {
+      this.citySearch = 'Virtual';
+    } else {
+      this.citySearch = this.getSelectedCityName();
+    }
   }
   // 🚀 Método para actualizar la contraseña desde el perfil
   updatePassword(): void {
@@ -447,4 +457,25 @@ export class ProfilePage implements OnInit {
       }
     });
   }
+
+setVirtualMode(isVirtual: boolean): void {
+  this.formData.is_virtual = isVirtual;
+
+  if (isVirtual) {
+    this.formData.city_id = 1106; // ID de la ciudad virtual en BD
+    this.citySearch = 'Virtual';
+    this.showCitySuggestions = false;
+    this.cityError = '';
+  } else {
+    // Si desmarca virtual, reseteamos para que elija una ciudad física
+    this.formData.city_id = 0;
+    this.citySearch = '';
+  }
+}
+// 4. Asegúrate de que onCitySearchBlur prevenga cerrar antes de tiempo al hacer click
+onCitySearchBlur(): void {
+  setTimeout(() => {
+    this.showCitySuggestions = false;
+  }, 200);
+}
 }
