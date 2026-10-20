@@ -1,6 +1,6 @@
 
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject,ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
@@ -24,6 +24,7 @@ export class Register {
   private readonly registerService = inject(RegisterService);
   private readonly locationService = inject(LocationService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   cities: City[] = [];
   citySearch = '';
@@ -162,27 +163,33 @@ export class Register {
 
     this.isSubmitting = true;
 
-    this.registerService.register(this.form).subscribe({
-      next: (response) => {
-        this.isSubmitting = false;
+   this.registerService.register(this.form).subscribe({
+  next: (response) => {
+    this.isSubmitting = false;
 
-        if (response.success) {
-          this.successMessage =
-            '¡Registro exitoso! Ya puedes iniciar sesión.';
+    if (response.success) {
+      this.successMessage = '¡Registro exitoso! Ya puedes iniciar sesión.';
 
-          setTimeout(() => {
-            this.router.navigate(['/auth/login']);
-          }, 1500);
-        }
-      },
-      error: (error) => {
-        this.isSubmitting = false;
+      setTimeout(() => {
+        this.router.navigate(['/auth/login']);
+      }, 1500);
+    }
+  },
+ error: (err) => {
+    this.isSubmitting = false;
 
-        this.errorMessage =
-          error.error?.message ??
-          'No fue posible completar el registro.';
-      }
-    });
+    // Extrae directamente el mensaje que viene en la estructura de Express
+    const backendMessage = err.error?.message;
+
+    this.errorMessage =
+      backendMessage ||
+      'No fue posible completar el registro.';
+
+    console.log('Mensaje pintado:', this.errorMessage); // Para verificar en consola
+    // 🚀 Forzamos a Angular a repintar la vista de inmediato
+    this.cdr.detectChanges();
+  }
+});
   }
 }
 
