@@ -12,14 +12,14 @@
           <img
             src="/images/fornicas-banner3.jpg"
             class="d-block w-100"
-            alt="Presentación de Fornicas"
+            alt="Perfiles de scorts y acompañantes en Fornicas"
           />
         </div>
         <div class="carousel-item">
           <img
             src="/images/fornicas-banner2.jpg"
             class="d-block w-100"
-            alt="Anuncio de Fornicas"
+            alt="Anuncio de perfiles de scorts verificadas"
           />
         </div>
 
@@ -27,7 +27,7 @@
           <img
             src="/images/fornicas-banner.jpg"
             class="d-block w-100"
-            alt="Anuncio de Fornicas"
+            alt="Encuentra scorts presenciales y virtuales"
           />
         </div>
       </div>
@@ -54,13 +54,15 @@
     </div>
   </section>
 
+  <!-- 🎯 HERO REESTRUCTURADO PARA SEO -->
   <section class="hero container text-center">
     <p class="eyebrow">Bienvenido a Fornicas</p>
 
-    <h1>Descubre perfiles y encuentra nuevas conexiones</h1>
+    <!-- H1 con la palabra clave principal -->
+    <h1>Perfiles de Scorts y Acompañantes Verificadas</h1>
 
     <p class="description">
-      Explora perfiles, conoce más sobre cada persona y descubre nuevas conexiones.
+      Explora perfiles de scorts presenciales y virtuales. Conecta directamente con cada persona de forma discreta y segura en Pasto y todo Colombia.
     </p>
 
     @if (!isLoggedIn) {
@@ -76,9 +78,9 @@
       <div class="row align-items-center">
         <div class="col-12 col-md-8 mb-3 mb-md-0 text-center text-md-start">
           <span class="badge bg-primary px-3 py-1 rounded-pill mb-2">Comunidad</span>
-          <h3 class="fw-bold m-0 text-white">¿Quieres opinar o ver experiencias?</h3>
+          <h3 class="fw-bold m-0 text-white">¿Quieres opinar o ver experiencias sobre scorts?</h3>
           <p class="text-white small m-0 mt-1">
-            Ingresa a nuestro foro público, comparte tus comentarios y debate sobre temas de tu ciudad.
+            Ingresa a nuestro foro público, comparte tus opiniones y lee reseñas de usuarios en tu ciudad.
           </p>
         </div>
         <div class="col-12 col-md-4 text-center text-md-end">
@@ -94,7 +96,7 @@
 
     <div class="row g-3 mb-4 profile-filters">
       <div class="col-12 col-md-7">
-        <label for="profileSearch" class="form-label">Buscar por nombre</label>
+        <label for="profileSearch" class="form-label">Buscar scorts por nombre</label>
         <input
           id="profileSearch"
           type="search"
@@ -106,13 +108,13 @@
       </div>
 
       <div class="col-12 col-md-5">
-        <label for="cityFilter" class="form-label">Buscar por ciudad</label>
+        <label for="cityFilter" class="form-label">Buscar scorts por ciudad</label>
 
         <input
           id="cityFilter"
           type="text"
           class="form-control"
-          placeholder="Escribe una ciudad..."
+          placeholder="Escribe una ciudad (Ej. Pasto)..."
           [(ngModel)]="citySearchText"
           (ngModelChange)="filterCities()"
           list="homeCities"
@@ -138,7 +140,7 @@
     </div>
 
     <p class="text-muted small mb-3">
-      {{ totalProfiles }} perfiles encontrados
+      {{ totalProfiles }} perfiles de scorts encontrados
     </p>
 
     <div class="row g-4">
@@ -167,4 +169,20 @@
     }
 
   </section>
+
+  <!-- 🚀 BLOQUE DE TEXTO SEO AL FINAL DE LA PÁGINA (Fundamental para Google) -->
+  <section class="container my-5 pt-4 border-top text-muted small">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="h5 fw-bold text-dark mb-3">Encuentra los mejores perfiles de Scorts en Pasto y Colombia</h2>
+        <p>
+          En <strong>Fornicas</strong> facilitamos el contacto directo entre usuarios y perfiles independientes de scorts en Pasto, Bogotá, Medellín, Cali y principales ciudades del país. Nuestro portal ofrece opciones con servicio presencial y modalidad virtual a nivel nacional.
+        </p>
+        <p>
+          Revisa fotos verificadas, descripciones detalladas, medios de contacto directo como WhatsApp o Telegram y experiencias de otros usuarios en nuestra sección de comunidad.
+        </p>
+      </div>
+    </div>
+  </section>
+
 </main>
