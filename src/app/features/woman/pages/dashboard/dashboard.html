@@ -8,12 +8,19 @@
   </header>
 
   <main class="dashboard-content">
-    <section class="welcome-card">
-      <p class="eyebrow">Panel privado</p>
-      <h1>¡Bienvenida a Fornicas!</h1>
-      <p>Desde aquí podrás administrar tu perfil y revisar tus novedades.</p>
-      <p class="user-email">{{ email }}</p>
+<section class="welcome-card">
+  <p class="eyebrow">Panel privado</p>
+  <h1>¡Bienvenida a Fornicas!</h1>
+  <p>Desde aquí podrás administrar tu perfil y revisar tus novedades.</p>
+  <p class="user-email">{{ email }}</p>
+
+  @if (!subscription) {
+    <section class="subscription-card state-card empty-state mt-3">
+      <h2 class="text-danger fw-bold">No tienes una suscripción activa</h2>
+      <p class="text-danger mb-0">Si acabas de realizar un pago, espera a que sea aprobado.</p>
     </section>
+  }
+</section>
 
     <section class="dashboard-grid">
 

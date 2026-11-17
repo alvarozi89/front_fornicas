@@ -5,7 +5,8 @@ import { MyProfileService } from '../../../../core/services/my-profile';
 import { ProfileService } from '../../../../core/services/profile';
 import { Profile } from '../../../../core/models/profile';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { SubscriptionService } from '../../../../core/services/subscription';
+import { Subscription as UserSubscription } from '../../../../core/models/subscription';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -18,10 +19,15 @@ export class Dashboard implements OnInit {
   private readonly router = inject(Router);
   private readonly profileService = inject(MyProfileService);
   private readonly profileServ = inject(ProfileService);
+   private readonly subscriptionService = inject(SubscriptionService);
   private readonly cdr = inject(ChangeDetectorRef);
+
 
   profile: Profile | null = null;
   isLoadingProfile = true;
+  subscription: UserSubscription | null = null;
+  isLoading = true;
+  errorMessage = '';
 
   get email(): string {
     return this.authState.getCurrentUser()?.email ?? '';
@@ -41,6 +47,7 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       }
     });
+     this.loadSubscription();
   }
 
   logout(): void {
@@ -60,6 +67,26 @@ export class Dashboard implements OnInit {
       error: (err) => {
         console.error('Error al dar de baja el perfil:', err);
         alert(err.error?.message || 'Ocurrió un error al intentar dar de baja la cuenta.');
+      }
+    });
+  }
+
+    loadSubscription(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.subscriptionService.getActiveSubscription().subscribe({
+      next: (response) => {
+        this.subscription = response.data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        console.log('Subscription loaded:', this.subscription);
+      },
+      error: (error) => {
+        console.error('Error al cargar la suscripción:', error);
+        this.errorMessage = 'No fue posible consultar tu suscripción.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
